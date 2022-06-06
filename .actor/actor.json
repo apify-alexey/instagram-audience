@@ -1,21 +1,21 @@
 {
   "actorSpecification": 1,
-  "name": "instagram-bulk-comments",
-  "title": "Instagram Bulk Comments",
-  "description": "Instagram Comments in large amounts",
+  "name": "instagram-audience",
+  "title": "Instagram audience",
+  "description": "Instagram comments, likes or followers-following",
   "version": "0.0.1",
   "storages": {
     "dataset": {
       "actorSpecification": 1,
-      "title": "Instagram Bulk Comments",
-      "description": "Comments from all posts",
+      "title": "Comments, likes or followers-following",
+      "description": "Output details based on Instagram page type (POST or PROFILE)",
       "views": {
         "overview": {
           "title": "Overview",
           "description": "",
           "transformation": {
             "fields": [
-              "tag",
+              "type",
               "instagramUrl",
               "profileUrl"
             ]
@@ -23,9 +23,9 @@
           "display": {
             "component": "table",
             "columns": [
-              { "label": "Tag", "format": "text", "field": "tag" },
-              { "label": "Instagram Url", "format": "text", "link": "instagramUrl" },
-              { "label": "Profile URL", "format": "link", "field": "profileUrl" }
+              { "label": "Reaction", "format": "text", "field": "type" },
+              { "label": "Instagram Url", "format": "text", "field": "instagramUrl" },
+              { "label": "Profile URL", "format": "text", "field": "profileUrl" }
             ]
           }
         }
