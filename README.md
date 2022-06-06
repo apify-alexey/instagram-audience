@@ -10,7 +10,7 @@ Don't worry! Actor doesn't know your password, nor your email address.
 - Copy this and paste it back into the input in your Apify actor.
 
 ## Cost of usage
-- [Compute units](https://apify.com/pricing/actors) - used for running the scraper, you should be able to get around 10.000 results per hour.
+- [Compute units](https://apify.com/pricing/actors) - used for running the scraper, you should be able to get around 7.000 - 10.000 results per hour.
 
 ### Using proxies
 Datacenter proxies or any other proxies will work.

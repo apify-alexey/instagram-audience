@@ -43,8 +43,8 @@ Apify.main(async () => {
     const crawler = new Apify.PlaywrightCrawler({
         requestQueue,
         proxyConfiguration,
-        maxConcurrency: 1,
-        handlePageTimeoutSecs: 60 * 8, // 8 hours max, expected 10.000 comments per hour
+        maxConcurrency: 1, // plugins enforce to open only single instance per type
+        handlePageTimeoutSecs: 60 * 60 * 8, // 8 hours max, expected 10.000 comments per hour
         launchContext: {
             // To use Firefox or WebKit on the Apify Platform,
             // don't forget to change the image in Dockerfile
