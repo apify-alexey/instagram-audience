@@ -1,3 +1,7 @@
 {
-     "env": { "npm_config_loglevel": "silent" }
+	"name": "instagram-audience",
+	"version": "1.0",
+	"buildTag": "latest",
+	"env": null,
+	"template": "project_cheerio_crawler"
 }

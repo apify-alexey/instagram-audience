@@ -1,6 +1,6 @@
 {
-  "title": "PlaywrightCrawler Template",
-  "description": "lorem ipsum",
+  "title": "instagram-audience",
+  "description": "Big data scraping (thousands) for Instagram comments, likes or followers-following",
   "type": "object",
   "schemaVersion": 1,
   "properties": {

@@ -1,7 +1,7 @@
 {
-    "name": "project-playwright-crawler",
-    "version": "0.0.1",
-    "description": "This is a boilerplate of an Apify actor.",
+    "name": "instagram-audience",
+    "version": "1.0.1",
+    "description": "Big data scraping (thousands) for Instagram comments, likes or followers-following",
     "dependencies": {
         "apify": "^2.3.2",
         "playwright": "*"
