@@ -32,13 +32,15 @@ Apify.main(async () => {
         proxy = { useApifyProxy: true },
     } = input;
 
-    const requestList = await Apify.openRequestList('start-urls', startUrls);
     const requestQueue = await Apify.openRequestQueue();
+    // removed requestList to process plugin URLs after IG URLs
+    for (const rq of startUrls) {
+        await requestQueue.addRequest(rq);
+    }
     const proxyConfiguration = await Apify.createProxyConfiguration(proxy);
 
     // https://playwright.dev/docs/chrome-extensions or https://github.com/puppeteer/puppeteer/blob/main/docs/api.md#working-with-chrome-extensions
     const crawler = new Apify.PlaywrightCrawler({
-        requestList,
         requestQueue,
         proxyConfiguration,
         maxConcurrency: 1,
