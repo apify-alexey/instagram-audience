@@ -33,11 +33,13 @@ Apify.main(async () => {
             id: 'iiblfonkagipdojommmomopjldpibdbb',
             path: path.join(__dirname, 'instl'),
         },
+        /*
         {
             tag: 'followers&following',
             id: 'bckleejkdhlponanidmjfjdigpahlado',
             path: path.join(__dirname, 'instf'),
         }
+        */
     ];
     const postDashboardUrl = ({ id, instagramUrl }) => `chrome-extension://${id}/dashboard.html?target_url=${instagramUrl}`;
     const postPageRequest = ( plugin, instagramUrl ) => {
@@ -108,6 +110,7 @@ Apify.main(async () => {
                     }
                     return;
                 }
+                return;
                 const profile = transformUrl.pathname.split('/').filter(x => x).shift();
                 let tag;
                 if (includeFollowing) {
