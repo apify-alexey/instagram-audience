@@ -72,8 +72,12 @@ const handleList = async ({ page, request }, { maxItems }) => {
                     return { type: tag, instagramUrl, profileUrl, profilePic, ...x };
                 }));
             }
+            if (lastIndex > pluginData.export_data.length) {
+                retries = 0;
+            } else {
+                retries++;
+            }
             lastIndex = pluginData.export_data.length;
-            retries = 0;
         } else {
             retries++;
             // div[role="alert"] _visible = true if plugin failed with error to access IG

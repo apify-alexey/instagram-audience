@@ -41,9 +41,6 @@ Apify.main(async () => {
         proxyConfiguration,
         // plugins enforce to open only single instance per type (no multitabs)
         maxConcurrency: 1, // no multitabs
-        // open fresh page instance per IG request
-        useSessionPool: false,
-        persistCookiesPerSession: false,
         handlePageTimeoutSecs: 60 * 60 * 8, // 8 hours max, expected 10.000 comments per hour
         launchContext: {
             // To use Firefox or WebKit on the Apify Platform,
@@ -77,9 +74,11 @@ Apify.main(async () => {
         handlePageFunction: async (context) => {
             const { request, page } = context;
             const url = page.url();
-            if (url.includes('/login')) {
-                log.warning(`BLOCKED by LOGIN redirect from ${request.url}`);
-                return;
+            // track blocking IG patterns
+            const blockingUri = ['login', 'challenge'];
+            if (blockingUri.find((x) => url.includes(`/${x}`))) {
+                log.warning(`BLOCKED access for ${request.url}`);
+                return context?.crawler?.autoscaledPool.abort();
             }
             // all plugin pages opened from parent IG URL, so no other routing
             return handleStart(context, input, plugins);
