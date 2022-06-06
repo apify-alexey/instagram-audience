@@ -4,9 +4,8 @@ const { postPageRequest, profileDashboardUrl } = require('./consts');
 
 const { utils: { log, sleep } } = Apify;
 
-// add plugins to requestQueue based on opened Instagram profile or post
-exports.handleStart = async ({ page, crawler }, { includeComments, includeLikes, includeFollowing, includeFollowers }, plugins) => {
-    const { requestQueue } = crawler;
+// add plugins opened from parent Instagram profile or post
+exports.handleStart = async ({ page }, { includeComments, includeLikes, includeFollowing, includeFollowers, maxItems }, plugins) => {
     const url = page.url();
     const transformUrl = new URL(url);
     if (!transformUrl.host === 'www.instagram.com') {
@@ -14,12 +13,15 @@ exports.handleStart = async ({ page, crawler }, { includeComments, includeLikes,
         return;
     }
     const instagramUrl = url;
+    let pluginRequest;
     if (transformUrl.pathname.startsWith('/p/')) {
         if (includeComments) {
-            await requestQueue.addRequest(postPageRequest(plugins[0], instagramUrl), { forefront: true });
+            pluginRequest = postPageRequest(plugins[0], instagramUrl);
+            await handleList({ page, request: pluginRequest }, { maxItems });
         }
         if (includeLikes) {
-            await requestQueue.addRequest(postPageRequest(plugins[1], instagramUrl), { forefront: true });
+            pluginRequest = postPageRequest(plugins[1], instagramUrl);
+            await handleList({ page, request: pluginRequest }, { maxItems });
         }
         return;
     }
@@ -27,22 +29,25 @@ exports.handleStart = async ({ page, crawler }, { includeComments, includeLikes,
     let tag;
     if (includeFollowing) {
         tag = 'following';
-        await requestQueue.addRequest({
+        pluginRequest = {
             url: profileDashboardUrl({ ...plugins[2], tag, profile }),
             userData: { ...plugins[2], tag, instagramUrl },
-        }, { forefront: true });
+        };
+        await handleList({ page, request: pluginRequest }, { maxItems });
     }
     if (includeFollowers) {
         tag = 'followers';
-        await requestQueue.addRequest({
+        pluginRequest = {
             url: profileDashboardUrl({ ...plugins[2], tag, profile }),
             userData: { ...plugins[2], tag, instagramUrl },
-        }, { forefront: true });
+        };
+        await handleList({ page, request: pluginRequest }, { maxItems });
     }
 };
 
 // reparse output from plugins and save it to dataset
-exports.handleList = async ({ page, request }, { maxItems }) => {
+const handleList = async ({ page, request }, { maxItems }) => {
+    await page.goto(request.url);
     log.info(`[INSTAGRAM]: ${request?.userData?.instagramUrl} ${request?.userData?.tag}`);
     await sleep(5000);
     let retries = 0;
@@ -60,7 +65,11 @@ exports.handleList = async ({ page, request }, { maxItems }) => {
             const { tag, instagramUrl } = request.userData || {};
             if (saveData?.length) {
                 await Apify.pushData(saveData.map((x) => {
-                    return { type: tag, instagramUrl, profileUrl: x.profile_url, details: x };
+                    const profileUrl = x.profile_url;
+                    const profilePic = x.profile_pic_url;
+                    x.profile_url = undefined;
+                    x.profile_pic_url = undefined;
+                    return { type: tag, instagramUrl, profileUrl, profilePic, ...x };
                 }));
             }
             lastIndex = pluginData.export_data.length;
@@ -79,7 +88,8 @@ exports.handleList = async ({ page, request }, { maxItems }) => {
         }
     } while (retries < 10 && !allCommentsDownloaded);
     if (retries >= 10) {
-        log.error(`[FAILEDOWNLOAD]: ${request?.userData?.tag} not available from ${request.url}`);
+        log.error(`[PLUGINFAILED]: ${request?.userData?.tag} not available from ${request.url}`);
         await Apify.utils.puppeteer.saveSnapshot(page, { key: `error${request?.id}`, saveHtml: true });
+        throw new Error('PLUGIN');
     }
 };

@@ -2,7 +2,7 @@ const Apify = require('apify');
 const path = require('path');
 
 // const playwright = require('playwright');
-const { handleStart, handleList } = require('./src/routes');
+const { handleStart } = require('./src/routes');
 
 const { utils: { log } } = Apify;
 
@@ -32,18 +32,18 @@ Apify.main(async () => {
         proxy = { useApifyProxy: true },
     } = input;
 
-    const requestQueue = await Apify.openRequestQueue();
-    // removed requestList to process plugin URLs after IG URLs
-    for (const rq of startUrls) {
-        await requestQueue.addRequest(rq);
-    }
+    const requestList = await Apify.openRequestList('start-urls', startUrls);
     const proxyConfiguration = await Apify.createProxyConfiguration(proxy);
 
     // https://playwright.dev/docs/chrome-extensions or https://github.com/puppeteer/puppeteer/blob/main/docs/api.md#working-with-chrome-extensions
     const crawler = new Apify.PlaywrightCrawler({
-        requestQueue,
+        requestList,
         proxyConfiguration,
-        maxConcurrency: 1, // plugins enforce to open only single instance per type
+        // plugins enforce to open only single instance per type (no multitabs)
+        maxConcurrency: 1, // no multitabs
+        // open fresh page instance per IG request
+        useSessionPool: false,
+        persistCookiesPerSession: false,
         handlePageTimeoutSecs: 60 * 60 * 8, // 8 hours max, expected 10.000 comments per hour
         launchContext: {
             // To use Firefox or WebKit on the Apify Platform,
@@ -81,10 +81,8 @@ Apify.main(async () => {
                 log.warning(`BLOCKED by LOGIN redirect from ${request.url}`);
                 return;
             }
-            if (!url.startsWith('chrome-extension://')) {
-                return handleStart(context, input, plugins);
-            }
-            return handleList(context, input);
+            // all plugin pages opened from parent IG URL, so no other routing
+            return handleStart(context, input, plugins);
         },
     });
 
