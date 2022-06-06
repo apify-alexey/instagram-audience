@@ -1,0 +1,22 @@
+{
+   "background": {
+      "persistent": true,
+      "scripts": [ "/js/background.js" ]
+   },
+   "browser_action": {
+      "default_title": "Open a instagram post page, then click the button"
+   },
+   "content_security_policy": "script-src 'self' https://ssl.google-analytics.com; object-src 'self'",
+   "description": "Export all likes from a Instagram Post to CSV Excel & Giveaways Picker",
+   "icons": {
+      "128": "InsL-128.png",
+      "16": "InsL-16.png",
+      "48": "InsL-48.png"
+   },
+   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqtBRURXVNhO8gSUzLcx8jY9Ld7oQ9NL97IEPbF796w7l0j5zwsEj4Cp72Vz/0dUZ2ZZMaqUeUvv7gY+h1S0ymVa8KeidW58gKiGR2+QJAMG35X0fQ7Ud5dRb1zq//KYiBoa1dJECMUe3z8sF8ffS+ZF645Tq/UsY8AZGYnIV5CYSurS9ai8BWnsPeeGGvfX7N19w/wjrjJgD/9rPk/+mn7YL+SFKEZkG33ODRg5pbq6yYsb7eSOo/LVS5DAHlDSWRCQCcmcArjHC9xhK4qKSxCytAu92Q38VoqdfUUHqmYGb9oKXDO9cOHFVsxNGuB7QbtiO+2A3xmD+z8xV0TK+WwIDAQAB",
+   "manifest_version": 2,
+   "name": "InsL - Instagram Likes Exporter & Picker",
+   "permissions": [ "*://*.instagram.com/*", "*://*.cdninstagram.com/*", "*://*.fbcdn.net/*", "storage", "downloads", "webRequest", "webRequestBlocking" ],
+   "update_url": "https://clients2.google.com/service/update2/crx",
+   "version": "0.1.7"
+}

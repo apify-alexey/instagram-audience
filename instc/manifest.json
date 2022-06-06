@@ -1,0 +1,22 @@
+{
+   "background": {
+      "persistent": true,
+      "scripts": [ "/js/background.js" ]
+   },
+   "browser_action": {
+      "default_title": "Open a instagram post page, then click the button"
+   },
+   "content_security_policy": "script-src 'self' https://ssl.google-analytics.com; object-src 'self'",
+   "description": "Export all Comments from a Instagram Post to CSV Excel & Giveaways Picker",
+   "icons": {
+      "128": "InsC-128.png",
+      "16": "InsC-16.png",
+      "48": "InsC-48.png"
+   },
+   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoaytd4eW9ExqDVo+Bt4HQbp/4d6hqxp5/s/96O0ForQyNMDO7z2wnJ9Br/UCpCQ50j1MVigTKOUNW/yNpbAnpQf7qj+YnVwKK8+K9XBHaLd2UH4raQ7NbCsPvepf+yAq3td03LFOekYKHia2JY8BSbB24SIvcve5R2Gg0jqR7+DV9EbkEwKTc8Xm7nl4vFcVYq0D15VmAGmMmrWnNlsDPiAjeuq8ftYZhel/QtmcwiQ/0mZIqH37l6lkzAq7qnoFSw9jAEKQ+x8IaEalsPrur9N8gTdAtJYM9s7DEJf1KYRex4GXDnTtfbxMSg17um85cCEJwUlOPUiYTFKArRNlMwIDAQAB",
+   "manifest_version": 2,
+   "name": "InsC - Instagram Comments Exporter & Picker",
+   "permissions": [ "*://*.instagram.com/*", "*://*.cdninstagram.com/*", "*://*.fbcdn.net/*", "storage", "downloads", "webRequest", "webRequestBlocking" ],
+   "update_url": "https://clients2.google.com/service/update2/crx",
+   "version": "0.1.7"
+}

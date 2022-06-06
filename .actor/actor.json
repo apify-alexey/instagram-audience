@@ -1,0 +1,36 @@
+{
+  "actorSpecification": 1,
+  "name": "instagram-bulk-comments",
+  "title": "Instagram Bulk Comments",
+  "description": "Instagram Comments in large amounts",
+  "version": "0.0.1",
+  "storages": {
+    "dataset": {
+      "actorSpecification": 1,
+      "title": "Instagram Bulk Comments",
+      "description": "Comments from all posts",
+      "views": {
+        "overview": {
+          "title": "Overview",
+          "description": "",
+          "transformation": {
+            "fields": [
+              "tag",
+              "instagramUrl",
+              "profileUrl",
+              "details"
+            ]
+          },
+          "display": {
+            "component": "table",
+            "columns": [
+              { "label": "Tag", "format": "text", "field": "tag" },
+              { "label": "Instagram Url", "format": "text", "link": "instagramUrl" },
+              { "label": "Profile URL", "format": "link", "field": "profileUrl" }
+            ]
+          }
+        }
+      }
+    }
+  }
+}

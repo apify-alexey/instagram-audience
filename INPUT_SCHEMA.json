@@ -1,0 +1,69 @@
+{
+  "title": "PlaywrightCrawler Template",
+  "description": "lorem ipsum",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "startUrls": {
+      "title": "Add Instagram POST or PROFILE URLs you want to scrape",
+      "type": "array",
+      "description": "For POST you can get likes and comments, for PROFILE followers and following.",
+      "editor": "requestListSources",
+      "prefill": [
+        { "url": "https://www.instagram.com/apifytech/" },
+        { "url": "https://www.instagram.com/p/CeZUuTEjnsa/" }
+      ]
+    },
+    "sessionid": {
+      "title": "Requires sessionid from website Instagram",
+      "type": "string",
+      "description": "Auth cookie named sessionid to sign in to Instagram, copy it from your browser, better to login under fake account",
+      "editor": "textfield"
+    },
+    "includeLikes": {
+        "title": "Include likes",
+        "type": "boolean",
+        "description": "Include likes for Instagram POSTs",
+        "default": true
+    },
+    "includeComments": {
+        "title": "Include comments",
+        "type": "boolean",
+        "description": "Include comments for Instagram POSTs",
+        "default": true
+    },
+    "includeFollowers": {
+        "title": "Include followers",
+        "type": "boolean",
+        "description": "Include followers for Instagram PROFILEs",
+        "default": true
+    },
+    "includeFollowing": {
+        "title": "Include following",
+        "type": "boolean",
+        "description": "Include following for Instagram PROFILEs",
+        "default": true
+    },
+    "maxItems": {
+        "title": "Max items",
+        "type": "integer",
+        "description": "How many items you want to scrape from each Instagram URL.",
+        "editor": "number",
+        "unit": "per page",
+        "default": 0
+    },
+    "proxy": {
+      "title": "Proxy configuration",
+      "type": "object",
+      "description": "<strong>A proxy server is required to run this actor!</strong> Either use an Apify residential proxy, or provide your own proxy servers. Datacenter proxies will not work.",
+      "prefill": {
+          "useApifyProxy": true
+      },
+      "editor": "proxy"
+    }
+  },
+  "required": [
+    "startUrls",
+    "sessionid"
+  ]
+}

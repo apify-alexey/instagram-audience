@@ -1,0 +1,24 @@
+{
+   "background": {
+      "persistent": true,
+      "scripts": [ "/js/background.js" ]
+   },
+   "browser_action": {
+      "default_title": "Open a instagram page, then click the button"
+   },
+   "content_security_policy": "script-src 'self' https://ssl.google-analytics.com; object-src 'self'",
+   "description": "Export instagram followers and followings to csv/excel with one click in seconds.",
+   "icons": {
+      "128": "logo.png"
+   },
+   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApdvTEFMqiloH28y09X33q1Nn44olSGP1qgj7C2ozoA7Sm7mH3UYx4IAdhY3NWnbSK40jAuJINHv7w9EQaMxBsFB5VmkC4mKYEz8c3illoiBM9cHHDH+J5s+zWgJ2MYsOjHe6V7bzvwvmRpG5L8JICO/H/SejxhPvNA5OpnW1opdHzSBtUH3uzQ5OUH9F+qD+22Y45Dzi9a3f+knBL2/7GmwKDWDxS3gUZ3tloIrZgohx8btdzqIoMlZ7yXcVpL2Gel/8kGdhkwGcWyKaF7CeCtbeFUdfhG3+GjIC0csHakGqllUoF7RFF3OaqhyOEKl1sCcJbuOIvm1VZE4mTFxTWwIDAQAB",
+   "manifest_version": 2,
+   "name": "InsFo - Export Instagram Followers to CSV",
+   "oauth2": {
+      "client_id": "139709177625-tqvndblvq8hd9hdd460o38f14ndpa0ih.apps.googleusercontent.com",
+      "scopes": [ "https://www.googleapis.com/auth/userinfo.email" ]
+   },
+   "permissions": [ "*://insfo-api.vercel.app/*", "*://*.instagram.com/*", "*://*.cdninstagram.com/*", "*://*.fbcdn.net/*", "downloads", "storage", "identity", "webRequest", "webRequestBlocking" ],
+   "update_url": "https://clients2.google.com/service/update2/crx",
+   "version": "2.0.11"
+}
