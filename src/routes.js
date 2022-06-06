@@ -16,10 +16,10 @@ exports.handleStart = async ({ page, crawler }, { includeComments, includeLikes,
     const instagramUrl = url;
     if (transformUrl.pathname.startsWith('/p/')) {
         if (includeComments) {
-            await requestQueue.addRequest(postPageRequest(plugins[0], instagramUrl));
+            await requestQueue.addRequest(postPageRequest(plugins[0], instagramUrl), { forefront: true });
         }
         if (includeLikes) {
-            await requestQueue.addRequest(postPageRequest(plugins[1], instagramUrl));
+            await requestQueue.addRequest(postPageRequest(plugins[1], instagramUrl), { forefront: true });
         }
         return;
     }
@@ -30,14 +30,14 @@ exports.handleStart = async ({ page, crawler }, { includeComments, includeLikes,
         await requestQueue.addRequest({
             url: profileDashboardUrl({ ...plugins[2], tag, profile }),
             userData: { ...plugins[2], tag, instagramUrl },
-        });
+        }, { forefront: true });
     }
     if (includeFollowers) {
         tag = 'followers';
         await requestQueue.addRequest({
             url: profileDashboardUrl({ ...plugins[2], tag, profile }),
             userData: { ...plugins[2], tag, instagramUrl },
-        });
+        }, { forefront: true });
     }
 };
 
