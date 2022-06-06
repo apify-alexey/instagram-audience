@@ -44,8 +44,6 @@ exports.handleStart = async ({ page, crawler }, { includeComments, includeLikes,
 // reparse output from plugins and save it to dataset
 exports.handleList = async ({ page, request }, { maxItems }) => {
     log.info(`[INSTAGRAM]: ${request?.userData?.instagramUrl} ${request?.userData?.tag}`);
-    // await page.waitForSelector('input[aria-label="Search Input"]');
-    // await page.goto(`chrome-extension://hdfhpnjnlgekgjmniifdieiflhfdkmlk/dashboard.html?target_url=${url}`);
     await sleep(5000);
     let retries = 0;
     let lastIndex = 0;
@@ -81,6 +79,7 @@ exports.handleList = async ({ page, request }, { maxItems }) => {
         }
     } while (retries < 10 && !allCommentsDownloaded);
     if (retries >= 10) {
-        log.error(`[FAILEDOWNLOAD]: comments not available from ${request.url}`);
+        log.error(`[FAILEDOWNLOAD]: ${request?.userData?.tag} not available from ${request.url}`);
+        await Apify.utils.puppeteer.saveSnapshot(page, { key: `error${request?.id}`, saveHtml: true });
     }
 };
