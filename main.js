@@ -80,7 +80,7 @@ Apify.main(async () => {
                 return;
             }
             if (!url.startsWith('chrome-extension://')) {
-                return handleStart(context, input);
+                return handleStart(context, input, plugins);
             }
             return handleList(context, input);
         },
