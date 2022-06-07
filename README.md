@@ -17,82 +17,77 @@ Datacenter proxies or any other proxies will work.
 
 ### Instagram output examples
 
+For any IG reaction (like, comment, follows) there is values `type, instagramUrl, profileUrl, profilePic`
+The rest of details are differ based on reaction type, if you want to keep output CSV friendly please consider to do separate runs for each reaction type (i.e. one run to get likes, another to get comments and another to check follows - again, only suggested if you want to simplify CSV output, otherwise you will get mixed items).
+
 ```jsonc
-{
-  "type": "comments",
-  "instagramUrl": "https://www.instagram.com/p/CeZUuTEjnsa/",
-  "profileUrl": "https://www.instagram.com/alexeyudovydchenko",
-  "details": {
-    "created_at": "6/5/2022, 10:08:41 PM",
-    "id": "17901446582613253",
-    "text": "😀❤️",
-    "username": "alexeyudovydchenko",
-    "profile_pic_url": "https://scontent-ort2-2.cdninstagram.com/v/t51.2885-19/21879069_1932425943664048_6301929264866394112_n.jpg?stp=dst-jpg_s150x150&_nc_ht=scontent-ort2-2.cdninstagram.com&_nc_cat=104&_nc_ohc=Zq3K9jJt30QAX8My6KQ&edm=AI-cjbYBAAAA&ccb=7-5&oh=00_AT-XX2ByI2HqACuLMCuIWv3k9FHB3WSF_Qll1_TUOczNcQ&oe=62A4503F&_nc_sid=ba0005",
-    "profile_url": "https://www.instagram.com/alexeyudovydchenko"
-  }
-},
-{
-  "type": "likes",
-  "instagramUrl": "https://www.instagram.com/p/CeZUuTEjnsa/",
-  "profileUrl": "https://www.instagram.com/mr.bearightside",
-  "details": {
-    "id": "53055140",
-    "username": "mr.bearightside",
-    "full_name": "Arian S.",
-    "profile_pic_url": "https://scontent-ort2-2.cdninstagram.com/v/t51.2885-19/275684815_668141107641786_1076076365529199030_n.jpg?stp=dst-jpg_s150x150&_nc_ht=scontent-ort2-2.cdninstagram.com&_nc_cat=106&_nc_ohc=R_OVvgWkmZoAX-Wdkgy&edm=AAo1ks0BAAAA&ccb=7-5&oh=00_AT_RYEOK9Ym_H9VXSa0a-aBv5mQcXhMmfXAdyCHYzEc2XQ&oe=62A52144&_nc_sid=01e9e1",
-    "is_verified": "false",
-    "followed_by_viewer": "false",
-    "requested_by_viewer": "false",
-    "profile_url": "https://www.instagram.com/mr.bearightside"
-  }
-},
 {
   "type": "following",
   "instagramUrl": "https://www.instagram.com/apifytech/",
   "profileUrl": "https://www.instagram.com/bbalkansky",
-  "details": {
-    "pk": 904739536,
-    "username": "bbalkansky",
-    "full_name": "Bogomil Balkansky",
-    "is_private": false,
-    "profile_pic_url": "https://scontent-ort2-2.cdninstagram.com/v/t51.2885-19/55947318_369052530364871_348977547477778432_n.jpg?stp=dst-jpg_s150x150&_nc_ht=scontent-ort2-2.cdninstagram.com&_nc_cat=111&_nc_ohc=BUmk2uw5zLkAX_AgHgN&edm=ALB854YBAAAA&ccb=7-5&oh=00_AT9yeb7SBFcxQH6sagb3x5hDb4wgyBAbAg2FkYJ4ficrnA&oe=62A3A6E6&_nc_sid=04cb80",
-    "profile_pic_id": "2011769573470074987_904739536",
-    "is_verified": false,
-    "follow_friction_type": 0,
-    "growth_friction_info": {
-      "has_active_interventions": false,
-      "interventions": {}
-    },
-    "account_badges": [],
-    "has_anonymous_profile_picture": false,
-    "has_highlight_reels": false,
-    "latest_reel_media": 0,
-    "is_favorite": false,
-    "profile_url": "https://www.instagram.com/bbalkansky"
-  }
+  "profilePic": "https://scontent-den4-1.cdninstagram.com/v/t51.2885-19/55947318_369052530364871_348977547477778432_n.jpg?stp=dst-jpg_s150x150&_nc_ht=scontent-den4-1.cdninstagram.com&_nc_cat=111&_nc_ohc=BUmk2uw5zLkAX8aV26L&edm=ALB854YBAAAA&ccb=7-5&oh=00_AT_C08yGf6WTpnfSDVdMaHSzjDlS0GM6KdwuRU0lsoHQRQ&oe=62A5A126&_nc_sid=04cb80",
+  "pk": 904739536,
+  "username": "bbalkansky",
+  "full_name": "Bogomil Balkansky",
+  "is_private": false,
+  "profile_pic_id": "2011769573470074987_904739536",
+  "is_verified": false,
+  "follow_friction_type": 0,
+  "growth_friction_info": {
+    "has_active_interventions": false,
+    "interventions": {}
+  },
+  "account_badges": [],
+  "has_anonymous_profile_picture": false,
+  "has_highlight_reels": false,
+  "latest_reel_media": 0,
+  "is_favorite": false
 },
 {
   "type": "followers",
   "instagramUrl": "https://www.instagram.com/apifytech/",
-  "profileUrl": "https://www.instagram.com/petr.patek52",
-  "details": {
-    "pk": 16108745209,
-    "username": "petr.patek52",
-    "full_name": "Petr Patek",
-    "is_private": true,
-    "profile_pic_url": "https://scontent-ort2-2.cdninstagram.com/v/t51.2885-19/67492906_444738979462564_2508426493328097280_n.jpg?stp=dst-jpg_s150x150&_nc_ht=scontent-ort2-2.cdninstagram.com&_nc_cat=104&_nc_ohc=Br7llsoAkYYAX_U3mcX&tn=zIBiUYTwTtFHzdaf&edm=APQMUHMBAAAA&ccb=7-5&oh=00_AT8lrXWx80uACH4Xn1sRSOnSuK3C6kwO67LjukuMWtU9Tg&oe=62A496CE&_nc_sid=e5d0a6",
-    "profile_pic_id": "2081914644909315154_16108745209",
-    "is_verified": false,
-    "follow_friction_type": 0,
-    "growth_friction_info": {
-      "has_active_interventions": false,
-      "interventions": {}
-    },
-    "account_badges": [],
-    "has_anonymous_profile_picture": false,
-    "has_highlight_reels": false,
-    "latest_reel_media": 0,
-    "profile_url": "https://www.instagram.com/petr.patek52"
-  }
+  "profileUrl": "https://www.instagram.com/alexeyudovydchenko",
+  "profilePic": "https://scontent-den4-1.cdninstagram.com/v/t51.2885-19/21879069_1932425943664048_6301929264866394112_n.jpg?stp=dst-jpg_s150x150&_nc_ht=scontent-den4-1.cdninstagram.com&_nc_cat=104&_nc_ohc=Zq3K9jJt30QAX_TbIuR&edm=APQMUHMBAAAA&ccb=7-5&oh=00_AT_rMjTYOQIJLUPmGpgLZf7fYX0G8kqZiURYACHGo2Bl2Q&oe=62A64A7F&_nc_sid=e5d0a6",
+  "pk": 6083345372,
+  "username": "alexeyudovydchenko",
+  "full_name": "Alexey Udovydchenko",
+  "is_private": false,
+  "profile_pic_id": "1609845100345983280_6083345372",
+  "is_verified": false,
+  "follow_friction_type": 0,
+  "growth_friction_info": {
+    "has_active_interventions": false,
+    "interventions": {}
+  },
+  "account_badges": [],
+  "has_anonymous_profile_picture": false,
+  "reel_auto_archive": "unset",
+  "allowed_commenter_type": "any",
+  "has_highlight_reels": false,
+  "interop_messaging_user_fbid": 115831779801868,
+  "fbid_v2": "17841406041170418",
+  "latest_reel_media": 0
+},
+{
+  "type": "likes",
+  "instagramUrl": "https://www.instagram.com/p/CeZUuTEjnsa/",
+  "profileUrl": "https://www.instagram.com/zuzkave",
+  "profilePic": "https://scontent-den4-1.cdninstagram.com/v/t51.2885-19/51177160_310922602895888_2565253020937879552_n.jpg?stp=dst-jpg_s150x150&_nc_ht=scontent-den4-1.cdninstagram.com&_nc_cat=108&_nc_ohc=cdsfa0nL8CIAX-yNywB&edm=AAo1ks0BAAAA&ccb=7-5&oh=00_AT-2AngECifNsBWZlzksnf8LaSF-u5-j7pBu90CbUy045g&oe=62A54EF9&_nc_sid=01e9e1",
+  "id": "5598851678",
+  "username": "zuzkave",
+  "full_name": "Zuzka Velenská",
+  "is_verified": "false",
+  "followed_by_viewer": "false",
+  "requested_by_viewer": "false"
+},
+{
+  "type": "comments",
+  "instagramUrl": "https://www.instagram.com/p/CeZUuTEjnsa/",
+  "profileUrl": "https://www.instagram.com/alexeyudovydchenko",
+  "profilePic": "https://scontent-den4-1.cdninstagram.com/v/t51.2885-19/21879069_1932425943664048_6301929264866394112_n.jpg?stp=dst-jpg_s150x150&_nc_ht=scontent-den4-1.cdninstagram.com&_nc_cat=104&_nc_ohc=Zq3K9jJt30QAX_TbIuR&edm=AI-cjbYBAAAA&ccb=7-5&oh=00_AT9XE7CiIDr4Fo3DwKeZt6cvFlP2gZvSgDoTjFHh9cUf7Q&oe=62A64A7F&_nc_sid=ba0005",
+  "created_at": "6/5/2022, 10:08:41 PM",
+  "id": "17901446582613253",
+  "text": "😀❤️",
+  "username": "alexeyudovydchenko"
 }
 ```

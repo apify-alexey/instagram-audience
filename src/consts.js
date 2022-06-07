@@ -8,10 +8,12 @@ const postPageRequest = (plugin, instagramUrl) => {
 const profileDashboardUrl = ({ id, tag, profile }) => `chrome-extension://${id}/dashboard.html?username=${profile}&type=${tag}`;
 
 // max retries to get new data by plugin
-const maxRetries = 20;
+const maxRetries = 30;
+const delayBetweenRetries = 5000;
 
 module.exports = {
     postPageRequest,
     profileDashboardUrl,
     maxRetries,
+    delayBetweenRetries,
 };

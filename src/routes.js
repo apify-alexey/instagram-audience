@@ -1,6 +1,6 @@
 const Apify = require('apify');
 
-const { postPageRequest, profileDashboardUrl, maxRetries } = require('./consts');
+const { postPageRequest, profileDashboardUrl, maxRetries, delayBetweenRetries } = require('./consts');
 
 const { utils: { log, sleep } } = Apify;
 
@@ -49,13 +49,13 @@ exports.handleStart = async ({ page }, { includeComments, includeLikes, includeF
 const handleList = async ({ page, request }, { maxItems }) => {
     await page.goto(request.url);
     log.info(`[INSTAGRAM]: ${request?.userData?.instagramUrl} ${request?.userData?.tag}`);
-    await sleep(5000);
+    await sleep(delayBetweenRetries);
     let retries = 0;
     let lastIndex = 0;
     let pluginData;
     let allCommentsDownloaded;
     do {
-        await sleep(5000);
+        await sleep(delayBetweenRetries);
         pluginData = await page.evaluate(() => {
             // eslint-disable-next-line no-underscore-dangle
             return document.querySelector('div.main_app, div.main, div[role="alert"]')?.__vue__?._data;
