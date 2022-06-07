@@ -49,7 +49,6 @@ exports.handleStart = async ({ page, crawler }, { includeComments, includeLikes,
 
 // reparse output from plugins and save it to dataset
 exports.handleList = async ({ page, request }, { maxItems }) => {
-    await page.goto(request.url);
     await sleep(delayBetweenRetries);
     let retries = 0;
     let lastIndex = 0;
