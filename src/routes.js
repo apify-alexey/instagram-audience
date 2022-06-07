@@ -60,10 +60,15 @@ const handleList = async ({ page, request }, { maxItems }) => {
             // eslint-disable-next-line no-underscore-dangle
             return document.querySelector('div.main_app, div.main, div[role="alert"]')?.__vue__?._data;
         });
-        if (pluginData && pluginData?.export_data?.length >= lastIndex) {
+        // div[role="alert"] _visible = true if plugin failed with error to access IG
+        // eslint-disable-next-line no-underscore-dangle
+        if (pluginData && pluginData?._visible) {
+            retries = maxRetries;
+        } else if (pluginData && pluginData?.export_data?.length >= lastIndex) {
             const saveData = pluginData.export_data.slice(lastIndex, maxItems ? maxItems - lastIndex : undefined);
             const { tag, instagramUrl } = request.userData || {};
             if (saveData?.length) {
+                retries = 0;
                 await Apify.pushData(saveData.map((x) => {
                     const profileUrl = x.profile_url;
                     const profilePic = x.profile_pic_url;
@@ -71,20 +76,12 @@ const handleList = async ({ page, request }, { maxItems }) => {
                     x.profile_pic_url = undefined;
                     return { type: tag, instagramUrl, profileUrl, profilePic, ...x };
                 }));
-            }
-            if (lastIndex > pluginData.export_data.length) {
-                retries = 0;
+                lastIndex = pluginData.export_data.length;
             } else {
                 retries++;
             }
-            lastIndex = pluginData.export_data.length;
         } else {
-            retries++;
-            // div[role="alert"] _visible = true if plugin failed with error to access IG
-            // eslint-disable-next-line no-underscore-dangle
-            if (pluginData?._visible) {
-                retries = 10;
-            }
+            retries = maxRetries;
         }
         allCommentsDownloaded = pluginData && pluginData?.is_stopped;
         if (maxItems && maxItems <= pluginData?.export_data?.length) {
