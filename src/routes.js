@@ -4,8 +4,8 @@ const { postPageRequest, profileDashboardUrl, maxRetries, delayBetweenRetries } 
 
 const { utils: { log, sleep } } = Apify;
 
-// add plugins opened from parent Instagram profile or post
-exports.handleStart = async ({ page }, { includeComments, includeLikes, includeFollowing, includeFollowers, maxItems }, plugins) => {
+// queue plugins from parent Instagram profile or post
+exports.handleStart = async ({ page, crawler }, { includeComments, includeLikes, includeFollowing, includeFollowers }, plugins) => {
     const url = page.url();
     const transformUrl = new URL(url);
     if (!transformUrl.host === 'www.instagram.com') {
@@ -17,11 +17,12 @@ exports.handleStart = async ({ page }, { includeComments, includeLikes, includeF
     if (transformUrl.pathname.startsWith('/p/')) {
         if (includeComments) {
             pluginRequest = postPageRequest(plugins[0], instagramUrl);
-            await handleList({ page, request: pluginRequest }, { maxItems });
+            await crawler.requestQueue.addRequest(pluginRequest);
+            // await handleList({ page, request: pluginRequest }, { maxItems });
         }
         if (includeLikes) {
             pluginRequest = postPageRequest(plugins[1], instagramUrl);
-            await handleList({ page, request: pluginRequest }, { maxItems });
+            await crawler.requestQueue.addRequest(pluginRequest);
         }
         return;
     }
@@ -33,7 +34,8 @@ exports.handleStart = async ({ page }, { includeComments, includeLikes, includeF
             url: profileDashboardUrl({ ...plugins[2], tag, profile }),
             userData: { ...plugins[2], tag, instagramUrl },
         };
-        await handleList({ page, request: pluginRequest }, { maxItems });
+        await crawler.requestQueue.addRequest({ page, request: pluginRequest });
+        // await handleList({ page, request: pluginRequest }, { maxItems });
     }
     if (includeFollowers) {
         tag = 'followers';
@@ -41,12 +43,12 @@ exports.handleStart = async ({ page }, { includeComments, includeLikes, includeF
             url: profileDashboardUrl({ ...plugins[2], tag, profile }),
             userData: { ...plugins[2], tag, instagramUrl },
         };
-        await handleList({ page, request: pluginRequest }, { maxItems });
+        await crawler.requestQueue.addRequest({ page, request: pluginRequest });
     }
 };
 
 // reparse output from plugins and save it to dataset
-const handleList = async ({ page, request }, { maxItems }) => {
+exports.handleList = async ({ page, request }, { maxItems }) => {
     await page.goto(request.url);
     await sleep(delayBetweenRetries);
     let retries = 0;

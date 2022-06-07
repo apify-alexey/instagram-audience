@@ -2,7 +2,7 @@ const Apify = require('apify');
 const path = require('path');
 
 // const playwright = require('playwright');
-const { handleStart } = require('./src/routes');
+const { handleStart, handleDetail } = require('./src/routes');
 
 const { utils: { log } } = Apify;
 
@@ -113,8 +113,10 @@ Apify.main(async () => {
                     log.error(`BLOCKED access for ${request.url}`);
                     return;
                 }
-                // all plugin pages opened from parent IG URL, so no other routing
-                return handleStart(context, input, plugins);
+                if (!url.startsWith('chrome-extension://')) {
+                    return handleStart(context, input, plugins);
+                }
+                return handleDetail(context, input);
             },
         });
 
