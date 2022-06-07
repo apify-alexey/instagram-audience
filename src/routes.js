@@ -85,7 +85,7 @@ const handleList = async ({ page, request }, { maxItems }) => {
         }
 
         if (initialLogMessage) {
-            log.info(`[INSTAGRAM]: get ${request?.userData?.instagramUrl} ${request?.userData?.tag} (max ${pluginData?.export_data?.length})`);
+            log.info(`[INSTAGRAM]: get ${request?.userData?.instagramUrl} ${request?.userData?.tag}, counter: ${pluginData?.export_data?.length}`);
             initialLogMessage = false;
         }
 
@@ -94,7 +94,7 @@ const handleList = async ({ page, request }, { maxItems }) => {
             allCommentsDownloaded = true;
         }
     } while (retries < maxRetries && !allCommentsDownloaded);
-    log.info(`[INSTAGRAM]: done ${request?.userData?.instagramUrl} ${request?.userData?.tag} - saved ${lastIndex}`);
+    log.info(`[INSTAGRAM]: done ${request?.userData?.instagramUrl} ${request?.userData?.tag}, saved: ${lastIndex}`);
     if (retries >= maxRetries) {
         log.error(`[PLUGINFAILED]: ${request?.userData?.tag} not available from ${request.url}`);
         await Apify.utils.puppeteer.saveSnapshot(page, { key: `error${new Date().getTime()}`, saveHtml: false });

@@ -46,15 +46,16 @@ Apify.main(async () => {
         lastSessionId: sessionid,
         fatalError: false,
         queryUrlsFromIndex: 0,
+        requests: requestList?.requests?.map((x) => { return { url: x?.url }; }) || [],
     };
     const persistState = async () => { await Apify.setValue('STATE', state); };
     Apify.events.on('persistState', persistState);
 
     // need to process URLs in batches by 10 since for bigger lists
     // plugin become "dirty" and fails with false-positive error "please close tab with download in progress"
-    while (!state.fatalError && requestList?.requests?.length && requestList?.requests?.length > state.queryUrlsFromIndex) {
-        for (const rq of requestList.requests.slice(state.queryUrlsFromIndex, 10)) {
-            await requestQueue.addRequest({ url: rq.url });
+    do {
+        for (const rq of state.requests.slice(state.queryUrlsFromIndex, 10)) {
+            await requestQueue.addRequest(rq);
         }
         state.queryUrlsFromIndex += 10;
         const crawler = new Apify.PlaywrightCrawler({
@@ -118,7 +119,7 @@ Apify.main(async () => {
         });
 
         await crawler.run();
-    }
+    } while (!state.fatalError && state?.requests?.length && state?.requests?.length > state.queryUrlsFromIndex);
     const wasBlocked = state.fatalError ? 'WAS BLOCKED' : 'finished';
     log.info(`Crawl ${wasBlocked} with sessionId ${state.lastSessionId}`);
 });
