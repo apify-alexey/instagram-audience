@@ -66,21 +66,13 @@ exports.handleList = async ({ page, request }, { maxItems }) => {
         if (pluginData && pluginData?._visible) {
             retries = maxRetries;
         } else if (pluginData && pluginData?.export_data?.length >= lastIndex) {
-            const saveData = pluginData.export_data.slice(lastIndex, maxItems ? maxItems - lastIndex : undefined);
-            lastIndex = pluginData.export_data.length;
-            const { tag, instagramUrl } = request.userData || {};
-            if (saveData?.length) {
+            // output getting mixed during downloading, can not save by chunks from lastIndex
+            if (pluginData?.export_data?.length !== lastIndex) {
                 retries = 0;
-                await Apify.pushData(saveData.map((x) => {
-                    const profileUrl = x.profile_url;
-                    const profilePic = x.profile_pic_url;
-                    x.profile_url = undefined;
-                    x.profile_pic_url = undefined;
-                    return { type: tag, instagramUrl, profileUrl, profilePic, ...x };
-                }));
             } else {
                 retries++;
             }
+            lastIndex = pluginData.export_data.length;
         } else {
             retries = maxRetries;
         }
@@ -95,7 +87,20 @@ exports.handleList = async ({ page, request }, { maxItems }) => {
             allCommentsDownloaded = true;
         }
     } while (retries < maxRetries && !allCommentsDownloaded);
+
     log.info(`[INSTAGRAM]: done ${request?.userData?.instagramUrl} ${request?.userData?.tag}, saved: ${lastIndex}`);
+    const saveData = pluginData?.export_data?.slice(0, maxItems || undefined);
+    const { tag, instagramUrl } = request.userData || {};
+    if (saveData?.length) {
+        await Apify.pushData(saveData.map((x) => {
+            const profileUrl = x.profile_url;
+            const profilePic = x.profile_pic_url;
+            x.profile_url = undefined;
+            x.profile_pic_url = undefined;
+            return { type: tag, instagramUrl, profileUrl, profilePic, ...x };
+        }));
+    }
+
     if (retries >= maxRetries) {
         log.error(`[PLUGINFAILED]: ${request?.userData?.tag} not available from ${request.url}`);
         await Apify.utils.puppeteer.saveSnapshot(page, { key: `error${new Date().getTime()}`, saveHtml: false });
