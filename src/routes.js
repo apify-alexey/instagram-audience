@@ -1,6 +1,6 @@
 const Apify = require('apify');
 
-const { postPageRequest, profileDashboardUrl } = require('./consts');
+const { postPageRequest, profileDashboardUrl, maxRetries } = require('./consts');
 
 const { utils: { log, sleep } } = Apify;
 
@@ -90,10 +90,10 @@ const handleList = async ({ page, request }, { maxItems }) => {
         if (maxItems && maxItems <= pluginData?.export_data?.length) {
             allCommentsDownloaded = true;
         }
-    } while (retries < 10 && !allCommentsDownloaded);
-    if (retries >= 10) {
+    } while (retries < maxRetries && !allCommentsDownloaded);
+    if (retries >= maxRetries) {
         log.error(`[PLUGINFAILED]: ${request?.userData?.tag} not available from ${request.url}`);
-        await Apify.utils.puppeteer.saveSnapshot(page, { key: `error${request?.id}`, saveHtml: true });
+        await Apify.utils.puppeteer.saveSnapshot(page, { key: `error${new Date().getTime()}`, saveHtml: false });
         throw new Error('PLUGIN');
     }
 };

@@ -34,6 +34,7 @@ Apify.main(async () => {
 
     const requestList = await Apify.openRequestList('start-urls', startUrls);
     const proxyConfiguration = await Apify.createProxyConfiguration(proxy);
+    let lastSessionId;
 
     // https://playwright.dev/docs/chrome-extensions or https://github.com/puppeteer/puppeteer/blob/main/docs/api.md#working-with-chrome-extensions
     const crawler = new Apify.PlaywrightCrawler({
@@ -60,8 +61,13 @@ Apify.main(async () => {
             },
         },
         browserPoolOptions: {
-            postPageCreateHooks: [(page, browserController) => {
-                browserController.setCookies(page, [
+            postPageCreateHooks: [async (page, browserController) => {
+                const pageCookies = await browserController.getCookies(page);
+                const sessionCookie = pageCookies?.find((x) => x?.name === 'sessionid')?.value;
+                if (sessionCookie) {
+                    lastSessionId = sessionCookie;
+                }
+                await browserController.setCookies(page, [
                     {
                         name: 'sessionid',
                         value: sessionid,
@@ -86,5 +92,5 @@ Apify.main(async () => {
     });
 
     await crawler.run();
-    log.info('Crawl finished.');
+    log.info(`Crawl finished, new session ${lastSessionId}.`);
 });
