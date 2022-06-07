@@ -17,12 +17,12 @@ exports.handleStart = async ({ page, crawler }, { includeComments, includeLikes,
     if (transformUrl.pathname.startsWith('/p/')) {
         if (includeComments) {
             pluginRequest = postPageRequest(plugins[0], instagramUrl);
-            await crawler.requestQueue.addRequest(pluginRequest);
+            await crawler.requestQueue.addRequest(pluginRequest, { forcefront: true });
             // await handleList({ page, request: pluginRequest }, { maxItems });
         }
         if (includeLikes) {
             pluginRequest = postPageRequest(plugins[1], instagramUrl);
-            await crawler.requestQueue.addRequest(pluginRequest);
+            await crawler.requestQueue.addRequest(pluginRequest, { forcefront: true });
         }
         return;
     }
@@ -34,7 +34,7 @@ exports.handleStart = async ({ page, crawler }, { includeComments, includeLikes,
             url: profileDashboardUrl({ ...plugins[2], tag, profile }),
             userData: { ...plugins[2], tag, instagramUrl },
         };
-        await crawler.requestQueue.addRequest(pluginRequest);
+        await crawler.requestQueue.addRequest(pluginRequest, { forcefront: true });
         // await handleList({ page, request: pluginRequest }, { maxItems });
     }
     if (includeFollowers) {
@@ -43,7 +43,7 @@ exports.handleStart = async ({ page, crawler }, { includeComments, includeLikes,
             url: profileDashboardUrl({ ...plugins[2], tag, profile }),
             userData: { ...plugins[2], tag, instagramUrl },
         };
-        await crawler.requestQueue.addRequest(pluginRequest);
+        await crawler.requestQueue.addRequest(pluginRequest, { forcefront: true });
     }
 };
 

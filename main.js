@@ -2,7 +2,7 @@ const Apify = require('apify');
 const path = require('path');
 
 // const playwright = require('playwright');
-const { handleStart, handleDetail } = require('./src/routes');
+const { handleStart, handleList } = require('./src/routes');
 
 const { utils: { log } } = Apify;
 
@@ -116,7 +116,7 @@ Apify.main(async () => {
                 if (!url.startsWith('chrome-extension://')) {
                     return handleStart(context, input, plugins);
                 }
-                return handleDetail(context, input);
+                return handleList(context, input);
             },
         });
 
