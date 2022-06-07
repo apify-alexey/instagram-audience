@@ -54,7 +54,7 @@ Apify.main(async () => {
     // need to process URLs in batches by 10 since for bigger lists
     // plugin become "dirty" and fails with false-positive error "please close tab with download in progress"
     do {
-        for (const rq of state.requests.slice(state.queryUrlsFromIndex, 10)) {
+        for (const rq of state.requests.slice(state.queryUrlsFromIndex, state.queryUrlsFromIndex + 10)) {
             await requestQueue.addRequest(rq);
         }
         state.queryUrlsFromIndex += 10;
