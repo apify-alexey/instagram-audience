@@ -66,6 +66,7 @@ const handleList = async ({ page, request }, { maxItems }) => {
             retries = maxRetries;
         } else if (pluginData && pluginData?.export_data?.length >= lastIndex) {
             const saveData = pluginData.export_data.slice(lastIndex, maxItems ? maxItems - lastIndex : undefined);
+            lastIndex = pluginData.export_data.length;
             const { tag, instagramUrl } = request.userData || {};
             if (saveData?.length) {
                 retries = 0;
@@ -76,7 +77,6 @@ const handleList = async ({ page, request }, { maxItems }) => {
                     x.profile_pic_url = undefined;
                     return { type: tag, instagramUrl, profileUrl, profilePic, ...x };
                 }));
-                lastIndex = pluginData.export_data.length;
             } else {
                 retries++;
             }
@@ -85,7 +85,7 @@ const handleList = async ({ page, request }, { maxItems }) => {
         }
 
         if (initialLogMessage) {
-            log.info(`[INSTAGRAM]: get ${request?.userData?.instagramUrl} ${request?.userData?.tag}, counter: ${pluginData?.export_data?.length}`);
+            log.info(`[INSTAGRAM]: GET ${request?.userData?.instagramUrl} ${request?.userData?.tag}`);
             initialLogMessage = false;
         }
 
