@@ -114,7 +114,7 @@ Apify.main(async () => {
                     return;
                 }
                 // all plugin pages opened from parent IG URL, so no other routing
-                await handleStart(context, input, plugins);
+                return handleStart(context, input, plugins);
             },
         });
 
