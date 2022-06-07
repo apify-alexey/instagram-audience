@@ -6,6 +6,7 @@ const { handleStart } = require('./src/routes');
 
 const { utils: { log } } = Apify;
 
+// https://playwright.dev/docs/chrome-extensions or https://github.com/puppeteer/puppeteer/blob/main/docs/api.md#working-with-chrome-extensions
 const plugins = [
     {
         tag: 'comments',
@@ -30,67 +31,94 @@ Apify.main(async () => {
         startUrls,
         sessionid,
         proxy = { useApifyProxy: true },
+        debugLog = false,
     } = input;
 
+    if (debugLog) {
+        log.setLevel(log.LEVELS.DEBUG);
+    }
+
     const requestList = await Apify.openRequestList('start-urls', startUrls);
+    const requestQueue = await Apify.openRequestQueue();
     const proxyConfiguration = await Apify.createProxyConfiguration(proxy);
-    let lastSessionId;
 
-    // https://playwright.dev/docs/chrome-extensions or https://github.com/puppeteer/puppeteer/blob/main/docs/api.md#working-with-chrome-extensions
-    const crawler = new Apify.PlaywrightCrawler({
-        requestList,
-        proxyConfiguration,
-        // plugins enforce to open only single instance per type (no multitabs)
-        maxConcurrency: 1, // no multitabs
-        handlePageTimeoutSecs: 60 * 60 * 8, // 8 hours max, expected 10.000 comments per hour
-        launchContext: {
-            // To use Firefox or WebKit on the Apify Platform,
-            // don't forget to change the image in Dockerfile
-            // launcher: playwright.firefox,
-            useChrome: true,
-            // We don't have 'stealth' for Playwright yet.
-            // Try using Firefox, it is naturally stealthy.
-            launchOptions: {
-                // devtools: true,
-                headless: false,
-                args: [
-                    `--disable-extensions-except=${plugins.map((x) => x.path).join()}`,
-                    `--load-extension=${plugins.map((x) => x.path).join()}`,
-                ],
-                // viewport: { width: 1366, height: 768 }
+    const state = await Apify.getValue('STATE') || {
+        lastSessionId: sessionid,
+        fatalError: false,
+        queryUrlsFromIndex: 0,
+    };
+    const persistState = async () => { await Apify.setValue('STATE', state); };
+    Apify.events.on('persistState', persistState);
+
+    // need to process URLs in batches by 10 since for bigger lists
+    // plugin become "dirty" and fails with false-positive error "please close tab with download in progress"
+    while (!state.fatalError && requestList?.requests?.length && requestList?.requests?.length > state.queryUrlsFromIndex) {
+        for (const rq of requestList.requests.slice(state.queryUrlsFromIndex, 10)) {
+            await requestQueue.addRequest({ url: rq.url });
+        }
+        state.queryUrlsFromIndex += 10;
+        const crawler = new Apify.PlaywrightCrawler({
+            requestQueue,
+            proxyConfiguration,
+            // plugins enforce to open only single instance per type (no multitabs)
+            maxConcurrency: 1, // no multitabs
+            handlePageTimeoutSecs: 60 * 60 * 8, // 8 hours max, expected 10.000 comments per hour
+            launchContext: {
+                // To use Firefox or WebKit on the Apify Platform,
+                // don't forget to change the image in Dockerfile
+                // launcher: playwright.firefox,
+                useChrome: true,
+                // We don't have 'stealth' for Playwright yet.
+                // Try using Firefox, it is naturally stealthy.
+                launchOptions: {
+                    // devtools: true,
+                    headless: false, // required for plugins
+                    args: [
+                        `--disable-extensions-except=${plugins.map((x) => x.path).join()}`,
+                        `--load-extension=${plugins.map((x) => x.path).join()}`,
+                    ],
+                    // viewport: { width: 1366, height: 768 }
+                },
             },
-        },
-        browserPoolOptions: {
-            postPageCreateHooks: [async (page, browserController) => {
-                const pageCookies = await browserController.getCookies(page);
-                const sessionCookie = pageCookies?.find((x) => x?.name === 'sessionid')?.value;
-                if (sessionCookie) {
-                    lastSessionId = sessionCookie;
+            browserPoolOptions: {
+                postPageCreateHooks: [async (page, browserController) => {
+                    const url = page.url();
+                    const pageCookies = await browserController.getCookies(page);
+                    const sessionCookie = pageCookies?.find((x) => x?.name === 'sessionid')?.value;
+                    if (sessionCookie) {
+                        state.lastSessionId = sessionCookie;
+                        log.debug(`FoundCookies for ${url}`);
+                        return;
+                    }
+                    await browserController.setCookies(page, [
+                        {
+                            name: 'sessionid',
+                            value: sessionid,
+                            domain: '.instagram.com',
+                            path: '/',
+                        },
+                    ]);
+                    log.debug(`SetCookies for ${url}`);
+                }],
+            },
+            handlePageFunction: async (context) => {
+                const { request, page } = context;
+                const url = page.url();
+                // track blocking IG patterns
+                const blockingUri = ['login', 'challenge'];
+                if (blockingUri.find((x) => url.includes(`/${x}`))) {
+                    state.fatalError = true;
+                    await requestQueue.drop();
+                    log.error(`BLOCKED access for ${request.url}`);
+                    return;
                 }
-                await browserController.setCookies(page, [
-                    {
-                        name: 'sessionid',
-                        value: sessionid,
-                        domain: '.instagram.com',
-                        path: '/',
-                    },
-                ]);
-            }],
-        },
-        handlePageFunction: async (context) => {
-            const { request, page } = context;
-            const url = page.url();
-            // track blocking IG patterns
-            const blockingUri = ['login', 'challenge'];
-            if (blockingUri.find((x) => url.includes(`/${x}`))) {
-                log.warning(`BLOCKED access for ${request.url}`);
-                return context?.crawler?.autoscaledPool.abort();
-            }
-            // all plugin pages opened from parent IG URL, so no other routing
-            return handleStart(context, input, plugins);
-        },
-    });
+                // all plugin pages opened from parent IG URL, so no other routing
+                await handleStart(context, input, plugins);
+            },
+        });
 
-    await crawler.run();
-    log.info(`Crawl finished, new session ${lastSessionId}.`);
+        await crawler.run();
+    }
+    const wasBlocked = state.fatalError ? 'WAS BLOCKED' : 'finished';
+    log.info(`Crawl ${wasBlocked} with sessionId ${state.lastSessionId}`);
 });

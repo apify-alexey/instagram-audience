@@ -48,12 +48,12 @@ exports.handleStart = async ({ page }, { includeComments, includeLikes, includeF
 // reparse output from plugins and save it to dataset
 const handleList = async ({ page, request }, { maxItems }) => {
     await page.goto(request.url);
-    log.info(`[INSTAGRAM]: ${request?.userData?.instagramUrl} ${request?.userData?.tag}`);
     await sleep(delayBetweenRetries);
     let retries = 0;
     let lastIndex = 0;
     let pluginData;
     let allCommentsDownloaded;
+    let initialLogMessage = true;
     do {
         await sleep(delayBetweenRetries);
         pluginData = await page.evaluate(() => {
@@ -83,11 +83,18 @@ const handleList = async ({ page, request }, { maxItems }) => {
         } else {
             retries = maxRetries;
         }
+
+        if (initialLogMessage) {
+            log.info(`[INSTAGRAM]: get ${request?.userData?.instagramUrl} ${request?.userData?.tag} (max ${pluginData?.export_data?.length})`);
+            initialLogMessage = false;
+        }
+
         allCommentsDownloaded = pluginData && pluginData?.is_stopped;
         if (maxItems && maxItems <= pluginData?.export_data?.length) {
             allCommentsDownloaded = true;
         }
     } while (retries < maxRetries && !allCommentsDownloaded);
+    log.info(`[INSTAGRAM]: done ${request?.userData?.instagramUrl} ${request?.userData?.tag} - saved ${lastIndex}`);
     if (retries >= maxRetries) {
         log.error(`[PLUGINFAILED]: ${request?.userData?.tag} not available from ${request.url}`);
         await Apify.utils.puppeteer.saveSnapshot(page, { key: `error${new Date().getTime()}`, saveHtml: false });
