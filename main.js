@@ -82,16 +82,9 @@ Apify.main(async () => {
                 },
             },
             browserPoolOptions: {
-                postPageCreateHooks: [async (page, browserController) => {
-                    const url = page.url();
-                    const pageCookies = await browserController.getCookies(page);
-                    const sessionCookie = pageCookies?.find((x) => x?.name === 'sessionid')?.value;
-                    if (sessionCookie) {
-                        state.lastSessionId = sessionCookie;
-                        log.debug(`FoundCookies for ${url}`);
-                        return;
-                    }
-                    await browserController.setCookies(page, [
+                postLaunchHooks: [async (pageId, browserController) => {
+                    // eslint-disable-next-line no-underscore-dangle
+                    await browserController.browser._browserContext.addCookies([
                         {
                             name: 'sessionid',
                             value: sessionid,
@@ -99,7 +92,6 @@ Apify.main(async () => {
                             path: '/',
                         },
                     ]);
-                    log.debug(`SetCookies for ${url}`);
                 }],
             },
             handlePageFunction: async (context) => {
