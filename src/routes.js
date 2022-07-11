@@ -4,14 +4,84 @@ const { postPageRequest, profileDashboardUrl, maxRetries, delayBetweenRetries } 
 
 const { utils: { log, sleep } } = Apify;
 
+const getApiFromPage = async (page) => {
+    let api;
+    page.on('requestfinished', async (req) => {
+        const url = req.url();
+        if (!(url.includes('instagram.com/graphql/query/?query_hash=') && url.includes('first'))) {
+            return;
+        }
+        const resp = await req.response();
+        try {
+            const json = await resp.json();
+            if (json?.data?.user?.edge_owner_to_timeline_media) {
+                api = { url, json };
+            }
+        } catch (err) {
+            log.error(`requestfinished ${url} ${err?.message}`);
+        }
+    });
+    let waitApiAttempts = 10;
+    while (!api && waitApiAttempts > 0) {
+        // #app > div.css-wccsn7 > div.css-19poa0v > div.css-aq3slv > div.css-12b2ift > div > button > div.css-ykr4nq
+        const okButton = await page.$('#app > div.css-wccsn7 > div.css-19poa0v > div.css-aq3slv > div.css-12b2ift > div > button > div.css-ykr4nq');
+        const okButtonText = await okButton?.innerText();
+        if (okButtonText?.toUpperCase()?.startsWith('OK')) {
+            await okButton.click();
+        }
+        await sleep(10000);
+        waitApiAttempts--;
+    }
+    page.on('requestfinished', () => { });
+    return api;
+};
+
+const getProfilePosts = async (page, { maxItems }) => {
+    const url = page.url();
+    const api = await getApiFromPage(page);
+    if (!api) {
+        log.warning(`[POSTS]: not available from ${url}`);
+        await Apify.utils.puppeteer.saveSnapshot(page, { saveHtml: true });
+        return;
+    }
+    let endCursor;
+    const posts = [];
+    do {
+        const media = api?.json?.data?.user?.edge_owner_to_timeline_media;
+        if (media?.edges?.length) {
+            posts.push(...media.edges);
+            log.info(`saved ${media?.edges?.length} posts`);
+        }
+        endCursor = media?.page_info?.end_cursor;
+        if (endCursor && media?.page_info?.has_next_page) {
+            const nextPageUrl = new URL(api.url);
+            const apiVariables = JSON.parse(decodeURIComponent(nextPageUrl.searchParams.get('variables')));
+            apiVariables.after = endCursor;
+            nextPageUrl.searchParams.set('variables', encodeURIComponent(apiVariables));
+            api.json = await page.waitForFunction((fetchUrl) => fetch(fetchUrl).then((r) => r.json()), nextPageUrl.toString());
+            await sleep(5000);
+        }
+    } while (endCursor && (!maxItems || posts.length < maxItems));
+    log.info(`total ${posts.length} posts`);
+
+    await Apify.pushData({
+        type: 'posts',
+        instagramUrl: url,
+        posts: posts.slice(0, maxItems && posts.length > maxItems ? maxItems : undefined),
+    });
+};
+
 // queue plugins from parent Instagram profile or post
-exports.handleStart = async ({ page, crawler }, { includeComments, includeLikes, includeFollowing, includeFollowers }, plugins) => {
+exports.handleStart = async ({ page, crawler }, input, plugins) => {
+    const { includePosts, includeComments, includeLikes, includeFollowing, includeFollowers } = input;
+
     const url = page.url();
     const transformUrl = new URL(url);
     if (!transformUrl.host === 'www.instagram.com') {
         log.warning(`[WRONGURL]: ${url}`);
         return;
     }
+
     const instagramUrl = url;
     let pluginRequest;
     if (transformUrl.pathname.startsWith('/p/')) {
@@ -106,4 +176,14 @@ exports.handleList = async ({ page, request }, { maxItems }) => {
         await Apify.utils.puppeteer.saveSnapshot(page, { key: `error${new Date().getTime()}`, saveHtml: false });
         throw new Error('PLUGIN');
     }
+};
+
+exports.handleInssistWebClient = async ({ page }) => {
+    await page.waitForLoadState('networkidle');
+    await page.waitForSelector('#app');
+    const api = await getApiFromPage(page);
+    if (api) {
+        await Apify.pushData(api);
+    }
+    await Apify.utils.puppeteer.saveSnapshot(page, { saveHtml: false });
 };

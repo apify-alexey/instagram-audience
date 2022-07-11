@@ -4,6 +4,15 @@
   "type": "object",
   "schemaVersion": 1,
   "properties": {
+    "warmpupUrls": {
+      "title": "Warmp up URLs",
+      "type": "array",
+      "description": "dev",
+      "editor": "requestListSources",
+      "prefill": [
+        { "url": "https://www.instagram.com" }
+      ]
+    },
     "startUrls": {
       "title": "Add Instagram POST or PROFILE URLs you want to scrape",
       "type": "array",
@@ -20,28 +29,34 @@
       "description": "Auth cookie named sessionid to sign in to Instagram, copy it from your browser, better to login under fake account",
       "editor": "textfield"
     },
+    "includePosts": {
+      "title": "Include posts for Profiles",
+      "type": "boolean",
+      "description": "Include posts for Instagram PROFILESs",
+      "default": true
+    },
+    "includeFollowers": {
+      "title": "Include followers for Profiles",
+      "type": "boolean",
+      "description": "Include followers for Instagram PROFILEs",
+      "default": true
+    },
+    "includeFollowing": {
+        "title": "Include following for Profiles",
+        "type": "boolean",
+        "description": "Include following for Instagram PROFILEs",
+        "default": true
+    },
     "includeLikes": {
-        "title": "Include likes",
+        "title": "Include likes for Posts",
         "type": "boolean",
         "description": "Include likes for Instagram POSTs",
         "default": true
     },
     "includeComments": {
-        "title": "Include comments",
+        "title": "Include comments for Posts",
         "type": "boolean",
         "description": "Include comments for Instagram POSTs",
-        "default": true
-    },
-    "includeFollowers": {
-        "title": "Include followers",
-        "type": "boolean",
-        "description": "Include followers for Instagram PROFILEs",
-        "default": true
-    },
-    "includeFollowing": {
-        "title": "Include following",
-        "type": "boolean",
-        "description": "Include following for Instagram PROFILEs",
         "default": true
     },
     "maxItems": {

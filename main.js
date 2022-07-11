@@ -23,6 +23,13 @@ const plugins = [
         id: 'bckleejkdhlponanidmjfjdigpahlado',
         path: path.join(__dirname, 'instf'),
     },
+    /*
+    {
+        tag: 'inssist',
+        id: 'bcocdbombenodlegijagbhdjbifpiijp',
+        path: path.join(__dirname, 'inssist'),
+    },
+    */
 ];
 
 Apify.main(async () => {
@@ -95,13 +102,15 @@ Apify.main(async () => {
                 }],
             },
             handlePageFunction: async (context) => {
+                if (state.fatalError) {
+                    return;
+                }
                 const { request, page } = context;
                 const url = page.url();
                 // track blocking IG patterns
                 const blockingUri = ['login', 'challenge'];
                 if (blockingUri.find((x) => url.includes(`/${x}`))) {
                     state.fatalError = true;
-                    await requestQueue.drop();
                     log.error(`BLOCKED access for ${request.url}`);
                     return;
                 }
