@@ -1,0 +1,29 @@
+{
+   "action": {
+      "default_popup": "popup.html"
+   },
+   "background": {
+      "service_worker": "/background.js"
+   },
+   "description": "Engage with real followers & unfollow fake followers automatically",
+   "host_permissions": [ "*://insfo-api.vercel.app/*", "*://*.instagram.com/*" ],
+   "icons": {
+      "128": "logo-128.png",
+      "16": "logo-16.png",
+      "48": "logo-48.png"
+   },
+   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAp1rA9BvF1h+Gnd5/KQJ8t2L9rk6I3OqNX/pJLtaBljjOPGNkXJNfHIMaEcqgSB1n2AObzWyVnY9z7dUB3edNI4O7nKknISX3XsWgwWpOQ2Rq/dPV92brrgXy5xZXYkXMsOpa4n4WS/6w24T0pylXJH4lHmZWp8ppa8zNxUOltrrGE5N7fo8WAuv2zY0ghd7n+z684gf8C5MqofNtLoqY0pJSJoZMnucdCvAgp18vnkD3p4nsVMOvJUZD8Hh8FUa3q0BwbqibVVR2BNnwNq61+qpVcRWkUBoB44pPdf4qDio4RwOX883qEUkcJEMF/lO3ps4gy6PaVP1talxng316FwIDAQAB",
+   "manifest_version": 3,
+   "name": "InsGrow - Instagram Automation Tool",
+   "oauth2": {
+      "client_id": "139709177625-62buhii4kifp25eppr47fij71qa3ki63.apps.googleusercontent.com",
+      "scopes": [ "https://www.googleapis.com/auth/userinfo.email" ]
+   },
+   "permissions": [ "activeTab", "scripting", "storage", "identity", "cookies" ],
+   "update_url": "https://clients2.google.com/service/update2/crx",
+   "version": "1.1.2",
+   "web_accessible_resources": [ {
+      "matches": [ "https://*.instagram.com/*" ],
+      "resources": [ "dots-loading.gif", "logo-48.png", "css/popup.css", "css/dashboard.css", "crisp.png", "fonts/element-icons.woff", "fonts/element-icons.ttf" ]
+   } ]
+}
