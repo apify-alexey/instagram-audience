@@ -4,15 +4,6 @@
   "type": "object",
   "schemaVersion": 1,
   "properties": {
-    "warmpupUrls": {
-      "title": "Warmp up URLs",
-      "type": "array",
-      "description": "dev",
-      "editor": "requestListSources",
-      "prefill": [
-        { "url": "https://www.instagram.com" }
-      ]
-    },
     "startUrls": {
       "title": "Add Instagram POST or PROFILE URLs you want to scrape",
       "type": "array",
